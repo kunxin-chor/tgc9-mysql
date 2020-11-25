@@ -1,0 +1,88 @@
+create table parents (
+    parent_id int unsigned auto_increment primary key,
+    surname varchar(50) not null,
+    proper_name varchar(50) not null
+ ) engine=innodb;
+
+create table certificates (
+    certificate_id int unsigned auto_increment primary key,
+    name varchar(50) not null
+) engine=innodb;
+
+create table sessions (
+    session_id int unsigned auto_increment primary key,
+    created_at datetime not null,
+    venue varchar(45) not null
+) engine=innodb;
+
+create table child (
+    child_id int unsigned auto_increment primary key,
+    surname varchar(50) not null,
+    proper_name varchar(50) not null,
+    guardian int unsigned not null,
+    foreign key(guardian) references parents(parent_id)
+
+) engine=innodb;
+
+create table addresses (
+    address_id int unsigned auto_increment primary key,
+    street_name varchar(200) not null,
+    bulding_name varchar(100),
+    postal_code varchar(20) not null,
+    country varchar(100),
+    parent_id int unsigned not null,
+    foreign key(parent_id) references parents(parent_id)
+) engine = innodb;
+
+create table attendances (
+    attendance_id int unsigned auto_increment primary key,
+    session_id int unsigned not null,
+    foreign key(session_id) references sessions(session_id),
+    child_id int unsigned not null,
+    foreign key(child_id) references child(child_id)
+) engine = innodb;
+
+create table certificates_child (
+    certificates_child_id int unsigned auto_increment primary key,
+    certificate_id int unsigned not null,
+    child_id int unsigned not null,
+    foreign key(certificate_id) references certificates(certificate_id),
+    foreign key(child_id) references child(child_id)
+
+) engine = innodb;
+
+create table payments (
+    payment_id int unsigned auto_increment primary key,
+    child_id int unsigned not null,
+    session_id int unsigned not null,
+    foreign key(child_id) references child(child_id),
+    foreign key(session_id) references sessions(session_id),
+    payment_date datetime not null,
+    amount decimal not null,
+    payment_mode varchar(20) not null
+) engine = innodb;
+
+alter table child add gender varchar(1) not null;
+
+alter table child add dob datetime not null;
+
+alter table child drop gender;
+
+alter table child rename column surname to first_name;
+
+alter table child rename column proper_name to last_name;
+
+alter table child modify first_name varchar(100) not null;
+
+create table coaches(
+    coach_id int unsigned auto_increment primary key,
+    name varchar(50) not null
+) engine = innodb;
+
+// add in new foregin key to existing table
+
+// 1. create the new column
+alter table sessions add coach_id int unsigned not null;
+
+// 2. create the foregin key
+alter table sessions add constraint fk_coach_id foreign key (coach_id) references coaches(coach_id);
